@@ -1,6 +1,8 @@
 // src/main/java/com/elysion/user/controller/UserController.java
 package com.elysion.user.controller;
 
+import com.elysion.user.config.JwtUtil;
+import com.elysion.user.dto.MerchantProfileRequest;
 import com.elysion.user.dto.OrderDto;
 import com.elysion.user.dto.UserDto;
 import com.elysion.user.service.UserService;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -18,6 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil; // oder SecurityContext-Auslese
 
     /** Aktuelles Benutzerprofil abfragen */
     @GetMapping("/me")
@@ -54,5 +58,19 @@ public class UserController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"user-data.json\"")
                 .body(data);
+    }
+
+
+    @PostMapping("/merchant-profile")
+    public ResponseEntity<Void> updateMerchantProfile(
+            @RequestBody MerchantProfileRequest req,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.substring(7); // Strip "Bearer "
+        String email = jwtUtil.extractUsername(token);
+        UUID userId = userService.getAllUsers().stream().filter(u -> u.getEmail().equals(email)).findFirst().get().getId();
+
+        userService.createOrUpdateMerchantProfile(userId, req);
+        return ResponseEntity.ok().build();
     }
 }

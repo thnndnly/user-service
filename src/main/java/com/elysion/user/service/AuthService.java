@@ -237,7 +237,7 @@ public class AuthService {
         TwoFactorSecret tfs = twoFactorSecretRepository.findByUserId(user.getId()).get();
         tfs.setEnabled(true);
         twoFactorSecretRepository.save(tfs);
-        auditLogService.logEvent(user.getId(), "2FA_ENABLED", Map.of());
+        auditLogService.logEvent(user.getId(), "2FA_ENABLED", Map.of("ip", codeStr.replace("Bearer ", "")));
     }
 
     /** 2FA deaktivieren nach Code-Verifikation */
@@ -249,7 +249,7 @@ public class AuthService {
         TwoFactorSecret tfs = twoFactorSecretRepository.findByUserId(user.getId()).get();
         tfs.setEnabled(false);
         twoFactorSecretRepository.save(tfs);
-        auditLogService.logEvent(user.getId(), "2FA_DISABLED", Map.of());
+        auditLogService.logEvent(user.getId(), "2FA_DISABLED", Map.of("ip", codeStr.replace("Bearer ", "")));
     }
 
     @Transactional
@@ -257,7 +257,7 @@ public class AuthService {
         refreshTokenRepository.findByTokenHash(token).ifPresent(rt -> {
             rt.setRevokedAt(Instant.now());
             refreshTokenRepository.save(rt);
-            auditLogService.logEvent(rt.getUser().getId(), "LOGOUT", Map.of());
+            auditLogService.logEvent(rt.getUser().getId(), "LOGOUT", Map.of("ip", token.replace("Bearer ", "")));
         });
     }
 }
