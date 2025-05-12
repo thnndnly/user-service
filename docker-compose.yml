@@ -1,0 +1,8 @@
+services:
+  user-service:
+    image: user-service:latest     # Dein zuvor gebautes Image
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env                        # hier liegen alle SPRING_… Variablen
+    restart: unless-stopped
