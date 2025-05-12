@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -134,7 +135,7 @@ public class AuthService {
         refreshToken.setExpiresAt(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshTokenRepository.save(refreshToken);
 
-        auditLogService.logEvent(user.getId(), "LOGIN", Map.of("ip", req.getIpAddress()));
+        auditLogService.logEvent(user.getId(), "LOGIN", Map.of("ip", Objects.toString(req.getIpAddress(), "unknown")));
 
         return new LoginResponse(accessToken, refreshTokenPlain , "Bearer");
     }
