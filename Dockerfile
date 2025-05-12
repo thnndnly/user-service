@@ -1,5 +1,5 @@
 # -------- Stage 1: Build --------
-FROM maven:3.8.6-openjdk-17 AS builder
+FROM maven:3.8.6-eclipse-temurin-17 AS builder
 
 # Arbeitsverzeichnis im Container
 WORKDIR /workspace

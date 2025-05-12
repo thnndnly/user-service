@@ -1,8 +1,10 @@
 services:
   user-service:
-    image: user-service:latest     # Dein zuvor gebautes Image
+    build:
+      context: .
+    image: user-service         # oder: thnndnly/user-service
     ports:
-      - "8080:8080"
+      - "8080:8080"             # auf deine Port-Konfiguration anpassen
     env_file:
       - .env                        # hier liegen alle SPRING_… Variablen
     restart: unless-stopped
